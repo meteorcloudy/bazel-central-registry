@@ -202,6 +202,7 @@ module(
                 f.write(self._MODULE_BAZEL.format(
                     module.name, module.version,
                     module.compatibility_level) + deps)
+                f.write("\n")
 
         # Create source.json & copy patch files to the registry
         source = {
@@ -236,6 +237,7 @@ module(
 
         with p.joinpath("source.json").open("w") as f:
             json.dump(source, f, indent=4, sort_keys=True)
+            f.write("\n")
 
         # Create presubmit.yml file
         presubmit_yml = p.joinpath("presubmit.yml")
@@ -264,6 +266,7 @@ module(
         metadata["versions"].sort()
         with metadata_path.open("w") as f:
             json.dump(metadata, f, indent=4, sort_keys=True)
+            f.write("\n")
 
     def delete(self, module_name, version):
         """
@@ -278,3 +281,4 @@ module(
             metadata["versions"].remove(version)
         with metadata_path.open("w") as f:
             json.dump(metadata, f, indent=4, sort_keys=True)
+            f.write("\n")
