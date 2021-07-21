@@ -245,7 +245,9 @@ module(
             shutil.copy(module.presubmit_yml, presubmit_yml)
         else:
             platforms = {
-                "linux": {},
+                "centos7": {},
+                "debian10": {},
+                "ubuntu2004": {},
                 "macos": {},
                 "windows": {},
             }
