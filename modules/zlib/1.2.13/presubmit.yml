@@ -11,3 +11,4 @@ tasks:
     platform: ${{ platform }}
     build_targets:
     - '@zlib//:zlib'
+    - '@zlib//:zlib'
