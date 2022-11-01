@@ -27,6 +27,7 @@ Validations performed are:
 """
 
 import argparse
+import json
 import subprocess
 from pathlib import Path
 import shutil
@@ -218,6 +219,17 @@ def verify_module_dot_bazel(registry, module_name, version):
                                "Checked in MODULE.bazel file doesn't match the extracted and patched sources.\n"
                                + f"Please fix the MODULE.bazel file or you can add the following patch to {module_name}@{version}:\n"
                                + "    " + "    ".join(diff)))
+
+    patch_file = registry.get_patch_file_path(module_name, version, "module_dot_bazel.patch")
+    patch_file.parent.mkdir(parents=True, exist_ok=True)
+    open(patch_file, "w").writelines(diff)
+    source["patch_strip"] = int(source.get("patch_strip", 0))
+    patches = source.get("patches", {})
+    patches["module_dot_bazel.patch"] = integrity(read(patch_file))
+    source["patches"] = patches
+    with open(registry.get_source_path(module_name, version), "w") as f:
+      json.dump(source, f, indent=4)
+      f.write("\n")
   else:
     validation_results.append((BcrValidationResult.GOOD, "Checked in MODULE.bazel matches the sources."))
 
@@ -233,10 +245,10 @@ def validate_module(registry, module_name, version):
   print_expanded_group(f"Validating {module_name}@{version}")
 
   all_results = []
-  print_and_append_result(all_results, verify_module_existence(registry, module_name, version))
-  print_and_append_result(all_results, verify_source_archive_url(registry, module_name, version))
-  print_and_append_result(all_results, verify_source_archive_integrity(registry, module_name, version))
-  print_and_append_result(all_results, verify_presubmit_yml_change(registry, module_name, version))
+  # print_and_append_result(all_results, verify_module_existence(registry, module_name, version))
+  # print_and_append_result(all_results, verify_source_archive_url(registry, module_name, version))
+  # print_and_append_result(all_results, verify_source_archive_integrity(registry, module_name, version))
+  # print_and_append_result(all_results, verify_presubmit_yml_change(registry, module_name, version))
   print_and_append_result(all_results, verify_module_dot_bazel(registry, module_name, version))
 
   return all_results
