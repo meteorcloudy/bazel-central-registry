@@ -1,0 +1,22 @@
+name: Notify Module Maintainers
+on:
+  pull_request:
+    paths:
+      - 'modules/**'
+
+permissions:
+  contents: read
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@eb238b55efaa70779f274895e782ed17c84f2895 # v2.6.1
+        with:
+          egress-policy: audit
+
+      - name: Run BCR helper
+        uses: meteorcloudy/continuous-integration/actions/bcr-helper@a7329d2096c6099c5dc45b937865c2335b552d47 # master
+        with:
+          token: ${{ secrets.TEST_BCR_TOKEN }}
