@@ -17,6 +17,6 @@ jobs:
           egress-policy: audit
 
       - name: Run BCR helper
-        uses: meteorcloudy/continuous-integration/actions/bcr-helper@48e80e9a1bb997fb45eaac23ddcf4dfd84a090eb # master
+        uses: meteorcloudy/continuous-integration/actions/bcr-helper@efd26a4f015225d7bd46cca26f7fb7401a246cb8 # master
         with:
           token: ${{ secrets.TEST_BCR_TOKEN }}
