@@ -5,7 +5,7 @@ on:
       - 'modules/**'
 
 permissions:
-  contents: read
+  pull-requests: write
 
 jobs:
   notify:
