@@ -2,8 +2,12 @@
     "homepage": "https://zlib.net",
     "maintainers": [
         {
-            "email": "bazel-dev@googlegroups.com",
-            "name": "The Bazel Team"
+            "name": "Xudong Yang",
+            "github": "Wyverald"
+        },
+        {
+            "email": "Yun Peng",
+            "github": "meteorcloudy"
         }
     ],
     "repository": [
