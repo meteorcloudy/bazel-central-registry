@@ -19,7 +19,7 @@ jobs:
           egress-policy: audit
 
       - name: Run BCR PR Review Notifier
-        uses: meteorcloudy/continuous-integration/actions/bcr-pr-review-notifier@6ac7d107d0833d6c357caba7360406e1229b5ba1
+        uses: meteorcloudy/continuous-integration/actions/bcr-pr-review-notifier@0c8e76967b02aabaf49b7b2fae266ef783a963ee
         with:
           # This token needs to be updated annually on Feb 05.
           token: ${{ secrets.TEST_BCR_TOKEN }}
