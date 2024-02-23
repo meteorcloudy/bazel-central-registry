@@ -1,4 +1,4 @@
-name: BCR PR Review Approver
+name: Check module maintainers' approvals
 on:
   pull_request_target:
     branches:
