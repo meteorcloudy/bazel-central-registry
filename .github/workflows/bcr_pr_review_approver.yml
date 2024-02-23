@@ -23,4 +23,4 @@ jobs:
         uses: meteorcloudy/continuous-integration/actions/bcr-pr-review-approver@bcr_testing
         with:
           # This token needs to be updated annually on Feb 05.
-          token: ${{ secrets.BCR_PR_REVIEW_HELPER_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
