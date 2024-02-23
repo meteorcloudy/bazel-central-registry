@@ -5,8 +5,7 @@ on:
 
 jobs:
   check_review:
-    permissions:
-      pull-requests: write
+    permissions: write-all
     runs-on: ubuntu-latest
     steps:
       - name: Harden Runner
