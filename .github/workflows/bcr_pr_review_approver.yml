@@ -19,7 +19,7 @@ jobs:
           egress-policy: audit
 
       - name: Run BCR PR Review Approver
-        if: ${{ github.event.review.user.login != 'meteorcloudy' }}
+        # if: ${{ github.event.review.user.login != 'meteorcloudy' }}
         uses: meteorcloudy/continuous-integration/actions/bcr-pr-review-approver@bcr_testing
         with:
           # This token needs to be updated annually on Feb 05.
