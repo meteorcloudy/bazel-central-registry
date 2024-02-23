@@ -2,6 +2,7 @@ name: Review BCR Pull Requests
 on:
   schedule:
     - cron: "0 */3 * * *"
+  workflow_dispatch:
 
 jobs:
   review_prs:
