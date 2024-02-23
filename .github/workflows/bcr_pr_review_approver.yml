@@ -13,7 +13,13 @@ jobs:
         with:
           egress-policy: audit
 
-      - name: Run BCR PR Review Approver
-        uses: meteorcloudy/continuous-integration/actions/bcr-pr-review-approver@bcr_testing
+      # - name: Run BCR PR Review Approver
+      #   uses: meteorcloudy/continuous-integration/actions/bcr-pr-review-approver@bcr_testing
+      #   with:
+      #     token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Comment
+        uses: peter-evans/create-or-update-comment@v1
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{github.event.pull_request.number}}
+          body: "Hallo, world."
