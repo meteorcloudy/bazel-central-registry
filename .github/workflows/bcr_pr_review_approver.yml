@@ -1,4 +1,4 @@
-name: Notify Module Maintainers For PR Review
+name: BCR PR Review Approver
 on:
   pull_request_target:
     branches:
@@ -6,11 +6,11 @@ on:
     paths:
       - 'modules/**'
 
-permissions:
-  pull-requests: write
+  pull_request_review:
+    types: [submitted]
 
 jobs:
-  notify:
+  check_review:
     runs-on: ubuntu-latest
     steps:
       - name: Harden Runner
@@ -18,8 +18,8 @@ jobs:
         with:
           egress-policy: audit
 
-      - name: Run BCR PR Review Notifier
-        uses: meteorcloudy/continuous-integration/actions/bcr-pr-review-notifier@bcr_testing # master
+      - name: Run BCR PR Review Approver
+        uses: meteorcloudy/continuous-integration/actions/bcr-pr-review-approver@bcr_testing
         with:
           # This token needs to be updated annually on Feb 05.
           token: ${{ secrets.BCR_PR_REVIEW_HELPER_TOKEN }}
