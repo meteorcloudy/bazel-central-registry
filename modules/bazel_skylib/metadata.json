@@ -2,8 +2,8 @@
     "homepage": "https://github.com/bazelbuild/bazel-skylib",
     "maintainers": [
         {
-            "github": "Salmasamy",
-            "name": "Salma Samy"
+            "github": "bazel-io",
+            "name": "bazel io"
         }
     ],
     "repository": [

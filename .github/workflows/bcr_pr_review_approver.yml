@@ -11,6 +11,7 @@ on:
 
 jobs:
   check_review:
+    permissions: write-all
     runs-on: ubuntu-latest
     steps:
       - name: Harden Runner
@@ -19,8 +20,8 @@ jobs:
           egress-policy: audit
 
       - name: Run BCR PR Review Approver
-        if: ${{ github.event.review.user.login != 'meteorcloudy' }}
+        # if: ${{ github.event.review.user.login != 'meteorcloudy' }}
         uses: meteorcloudy/continuous-integration/actions/bcr-pr-review-approver@bcr_testing
         with:
           # This token needs to be updated annually on Feb 05.
-          token: ${{ secrets.BCR_PR_REVIEW_HELPER_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
