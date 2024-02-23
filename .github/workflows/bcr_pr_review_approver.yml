@@ -1,10 +1,10 @@
-name: Check module maintainers' approvals
+name: Review BCR Pull Requests
 on:
-  pull_request_review:
-    types: [submitted]
+  schedule:
+    - cron: "0 */3 * * *"
 
 jobs:
-  check_review:
+  review_prs:
     permissions: write-all
     runs-on: ubuntu-latest
     steps:
@@ -13,13 +13,7 @@ jobs:
         with:
           egress-policy: audit
 
-      # - name: Run BCR PR Review Approver
-      #   uses: meteorcloudy/continuous-integration/actions/bcr-pr-review-approver@bcr_testing
-      #   with:
-      #     token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Comment
-        uses: peter-evans/create-or-update-comment@v1
+      - name: Run BCR PR Review Approver
+        uses: meteorcloudy/continuous-integration/actions/bcr-pr-review-approver@bcr_testing
         with:
-          issue-number: ${{github.event.pull_request.number}}
-          body: "Hallo, world."
+          token: ${{ secrets.BCR_PR_REVIEW_HELPER_TOKEN }}
