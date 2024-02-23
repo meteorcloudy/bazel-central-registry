@@ -3,11 +3,10 @@ on:
   pull_request_review:
     types: [submitted]
 
-permissions:
-  pull-requests: write
-
 jobs:
   check_review:
+    permissions:
+      pull-requests: write
     runs-on: ubuntu-latest
     steps:
       - name: Harden Runner
