@@ -17,3 +17,9 @@ jobs:
         uses: meteorcloudy/continuous-integration/actions/bcr-pr-review-approver@bcr_testing
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Comment
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          issue-number: ${{github.event.pull_request.number}}
+          body: "Hallo, world."
