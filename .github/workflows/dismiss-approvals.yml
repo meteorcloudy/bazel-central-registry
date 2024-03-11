@@ -1,26 +1,25 @@
-name: Dismiss PR Approvals on Update
+name: Dismiss stale PR approvals
+
 on:
   pull_request_target:
     types: [synchronize]
+    branches:
+      - main
+    paths:
+      - 'modules/**'
 
 jobs:
-  dismiss-approvals:
+  review_prs:
+    permissions: write-all
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Set up Python
-        uses: actions/setup-python@v2
+      - name: Harden Runner
+        uses: step-security/harden-runner@eb238b55efaa70779f274895e782ed17c84f2895 # v2.6.1
         with:
-          python-version: '3.x'
+          egress-policy: audit
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install requests
-
-      - name: Dismiss Approvals
-        env:
-          GITHUB_TOKEN: ${{ secrets.BCR_PR_REVIEW_HELPER_TOKEN }}
-        run: python .github/scripts/dismiss_approvals.py ${{ github.repository }} ${{ github.event.pull_request.number }}
+      - name: Run BCR PR Review Approver
+        uses: meteorcloudy/continuous-integration/actions/bcr-pr-review-approver@bcr_reviewer
+        with:
+          token: ${{ secrets.BCR_PR_REVIEW_HELPER_TOKEN }}
+          action-type: dismiss_approvals
