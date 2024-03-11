@@ -22,5 +22,5 @@ jobs:
 
       - name: Dismiss Approvals
         env:
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-        run: python .github/scripts/dismiss_approvals.py ${{ github.repository }} ${{ github.event.pull_request.number }}
+          GITHUB_TOKEN: ${{ secrets.BCR_PR_REVIEW_HELPER_TOKEN }}
+        run: python .github/scripts/dismiss_approvals.py ${{ github.repository }} ${{ github.event.pull_request.number }} ${{ secrets.BCR_PR_REVIEW_HELPER_TOKEN }}
