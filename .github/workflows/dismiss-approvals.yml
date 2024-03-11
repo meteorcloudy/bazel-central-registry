@@ -1,6 +1,6 @@
 name: Dismiss PR Approvals on Update
 on:
-  pull_request:
+  pull_request_target:
     types: [synchronize]
 
 jobs:
