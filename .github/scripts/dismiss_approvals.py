@@ -1,3 +1,4 @@
+import os
 import sys
 import requests
 
@@ -31,6 +32,6 @@ def dismiss_approvals(repo_full_name, pr_number, token):
 if __name__ == "__main__":
     repo_full_name = sys.argv[1]  # 'owner/repo'
     pr_number = sys.argv[2]
-    token = sys.argv[3]
+    token = os.getenv('BCR_PR_REVIEW_HELPER_TOKEN')
 
     dismiss_approvals(repo_full_name, pr_number, token)
