@@ -1,0 +1,31 @@
+name: Dismiss PR Approvals on Update
+on:
+  pull_request:
+    types: [synchronize]
+
+jobs:
+  dismiss-approvals:
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Dismiss Approvals
+      env:
+        GITHUB_TOKEN: ${{ secrets.BCR_PR_REVIEW_HELPER_TOKEN }}
+      run: |
+        PR_NUMBER=${{ github.event.pull_request.number }}
+        REPO_FULL_NAME=${{ github.repository }}
+        API_URL="https://api.github.com/repos/$REPO_FULL_NAME/pulls/$PR_NUMBER/reviews"
+
+        # Get the ID of all approved reviews
+        APPROVED_REVIEWS=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+          -H "Accept: application/vnd.github.v3+json" \
+          "$API_URL" | jq '.[] | select(.state == "APPROVED") | .id')
+
+        # Loop through all approved reviews and dismiss them
+        for REVIEW_ID in $APPROVED_REVIEWS; do
+          DISMISS_PAYLOAD="{\"message\": \"New commits have been pushed.\"}"
+          curl -s -X PUT -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github.v3+json" \
+            -d "$DISMISS_PAYLOAD" \
+            "${API_URL}/${REVIEW_ID}/dismissals"
+        done
