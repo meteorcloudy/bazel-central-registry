@@ -1,8 +1,11 @@
-name: Review BCR Pull Requests
+name: Notify Module Maintainers For PR Review
+
 on:
-  # schedule:
-  #   - cron: "0 */3 * * *"
-  workflow_dispatch:
+  pull_request_target:
+    branches:
+      - main
+    paths:
+      - 'modules/**'
 
 jobs:
   review_prs:
@@ -15,6 +18,7 @@ jobs:
           egress-policy: audit
 
       - name: Run BCR PR Review Approver
-        uses: meteorcloudy/continuous-integration/actions/bcr-pr-review-approver@bcr_testing
+        uses: meteorcloudy/continuous-integration/actions/bcr-pr-reviewer@bcr_reviewer
         with:
           token: ${{ secrets.BCR_PR_REVIEW_HELPER_TOKEN }}
+          action-type: notify_maintainers
