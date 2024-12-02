@@ -1,5 +1,5 @@
 {
-    "homepage": "https://github.com/bazelbuild/rules_go",
+    "homepage": "https://github.com/bazel-contrib/rules_go",
     "maintainers": [
         {
             "email": "fabian@meumertzhe.im",
@@ -18,7 +18,8 @@
         }
     ],
     "repository": [
-        "github:bazel-contrib/rules_go"
+        "github:bazel-contrib/rules_go",
+        "github:bazelbuild/rules_go"
     ],
     "versions": [
         "0.33.0",

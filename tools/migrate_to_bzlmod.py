@@ -20,7 +20,7 @@ import logging
 
 from registry import RegistryClient
 
-# Configure logging with colored output
+# Configure logging with colored prefixes
 class ColoredFormatter(logging.Formatter):
     COLORS = {
         logging.INFO: "\x1b[32m",     # Green
@@ -70,7 +70,7 @@ def ask_input(msg):
     """Prompt the user for input with a message."""
     YELLOW = "\x1b[33m"
     RESET = "\x1b[0m"
-    return input(f"{YELLOW}ACTION: {RESET}{msg}")
+    return input(f"{YELLOW}ACTION:{RESET} {msg}")
 
 def yes_or_no(question, default, interactive):
     """Prompt the user with a yes/no question."""
@@ -162,7 +162,7 @@ def print_repo_definition(dep):
         logger.info(dep["definition_information"])
     logger.info("Repository definition:")
     for line in repo_def:
-        logger.info(line)
+        print(line)
     logger.info("-" * len(header))
 
     if file_label and file_label.startswith("@@"):
@@ -319,23 +319,43 @@ def address_unavailable_repo_error(repo, resolved_deps, workspace_name, interact
         )
         abort_migration()
 
-    logger.info(f"Searching for Bazel module based on repo name ({repo}) and URLs: {urls}")
-    found_module = None
+    logger.info(f"Searching for Bazel modules based on repo name ({repo}) and URLs: {urls}")
+    found_modules = []
     for module_name in REGISTRY_CLIENT.get_all_modules():
         if repo == module_name or any(url_match_source_repo(url, module_name) for url in urls):
-            found_module = module_name
+            found_modules.append(module_name)
 
-    if found_module:
-        metadata = REGISTRY_CLIENT.get_metadata(found_module)
+    if found_modules:
+        if len(found_modules) == 1:
+            selected_module = found_modules[0]
+            logger.info(f"Found module `{selected_module}` in the registry.")
+        else:
+            logger.info(f"Multiple modules found matching the repository:")
+            for idx, module_name in enumerate(found_modules, 1):
+                logger.info(f"  {idx}. {module_name}")
+            if interactive:
+                while True:
+                    choice = ask_input("Enter the number of the module you wish to add as bazel_dep: ").strip()
+                    if choice.isdigit() and 1 <= int(choice) <= len(found_modules):
+                        selected_module = found_modules[int(choice) - 1]
+                        break
+                    else:
+                        logger.error("Invalid selection. Please enter a valid number.")
+            else:
+                # Non-interactive mode, select the first one
+                selected_module = found_modules[0]
+                logger.info(f"Automatically selecting the first module: {selected_module}")
+
+        metadata = REGISTRY_CLIENT.get_metadata(selected_module)
         version = metadata["versions"][-1]
-        repo_name = "" if repo == found_module else f', repo_name = "{repo}"'
-        bazel_dep_line = f'bazel_dep(name = "{found_module}", version = "{version}"{repo_name})'
-        logger.info(f"Found module `{found_module}` in the registry, available versions: {metadata['versions']}")
+        repo_name = "" if repo == selected_module else f', repo_name = "{repo}"'
+        bazel_dep_line = f'bazel_dep(name = "{selected_module}", version = "{version}"{repo_name})'
+        logger.info(f"Available versions for `{selected_module}`: {metadata['versions']}")
         logger.info(f"This can be introduced via a bazel_dep definition:")
         logger.info(f"    {bazel_dep_line}")
 
         if yes_or_no(
-            "Do you wish to add the bazel_dep definition to the MODULE.bazel file?",
+            f"Do you wish to add the bazel_dep definition for `{selected_module}` to the MODULE.bazel file?",
             True,
             interactive,
         ):
@@ -347,7 +367,8 @@ def address_unavailable_repo_error(repo, resolved_deps, workspace_name, interact
 
     if (
         file_label
-        and file_label.startswith(("//", "@bazel_tools//"))
+        and (BAZEL_VERSION >= (8, 0, 0)
+        or (BAZEL_VERSION >= (7, 3, 0) and file_label.startswith(("//", "@bazel_tools//"))))
         and yes_or_no(
             "Do you wish to introduce the repository with use_repo_rule in MODULE.bazel (requires Bazel 7.3 or later)?",
             True,
@@ -357,7 +378,7 @@ def address_unavailable_repo_error(repo, resolved_deps, workspace_name, interact
         add_repo_with_use_repo_rule(repo, repo_def, file_label, rule_name)
     elif file_label and yes_or_no("Do you wish to introduce the repository with a module extension?", True, interactive):
         add_repo_to_module_extension(repo, repo_def, file_label, rule_name)
-    elif yes_or_no(
+    elif BAZEL_VERSION < (8, 0, 0) and yes_or_no(
         "Do you wish to add the repo definition to WORKSPACE.bzlmod for later migration?",
         True,
         interactive,
@@ -575,7 +596,6 @@ def main(argv=None):
             "build",
             "--nobuild",
             "--enable_bzlmod",
-            "--noenable_workspace",
         ] + args.target
         exit_code, _, stderr = execute_command(bazel_command)
         if exit_code == 0:
@@ -583,7 +603,7 @@ def main(argv=None):
                 f"Congratulations! All external repositories needed for building `{' '.join(args.target)}` are available with Bzlmod!"
             )
             logger.info("Next steps:")
-            logger.info("  - Migrate remaining dependencies in the WORKSPACE.bzlmod file to Bzlmod.")
+            logger.info("  - Migrate remaining dependencies in the WORKSPACE.bzlmod file to Bzlmod if used.")
             logger.info(
                 "  - Run the actual build with Bzlmod enabled (with --enable_bzlmod, but without --nobuild) "
                 "and fix any remaining build-time issues."
