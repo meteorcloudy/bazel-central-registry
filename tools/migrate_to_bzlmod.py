@@ -31,8 +31,11 @@ class ColoredFormatter(logging.Formatter):
 
     def format(self, record):
         color = self.COLORS.get(record.levelno, "")
-        message = super().format(record)
-        return f"{color}{message}{self.RESET}"
+        reset = self.RESET
+        levelname = record.levelname
+        prefix = f"{color}{levelname}:{reset}"
+        message = record.getMessage()
+        return f"{prefix} {message}"
 
 handler = logging.StreamHandler()
 handler.setFormatter(ColoredFormatter('%(message)s'))
