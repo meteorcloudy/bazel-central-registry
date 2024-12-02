@@ -385,8 +385,8 @@ def address_unavailable_repo_error(repo, resolved_deps, workspace_name):
     # Only ask if the repo is defined in @bazel_tools or the root module to avoid potential cycle.
     if (
         file_label
-        and file_label.startswith("//")
-        or file_label.startswith("@bazel_tools//")
+#        and file_label.startswith("//")
+#        or file_label.startswith("@bazel_tools//")
         and yes_or_no(
             "Do you wish to introduce the repository with use_repo_rule in MODULE.bazel (requires Bazel 7.3 or later)?",
             True,
@@ -476,6 +476,12 @@ def parse_bazel_version(bazel_version):
       An int 3-tuple of a (major, minor, patch) version.
     """
 
+    if bazel_version == "no_version":
+        warning(
+            "Current bazel is not a release version, we recommend using Bazel 7 or newer releases for Bzlmod migration."
+        )
+        return (999, 999, 999)
+
     version = extract_version_number(bazel_version)
     return tuple([int(n) for n in version.split(".")])
 
@@ -484,17 +490,19 @@ def prepare_migration():
     """Preparation work before starting the migration."""
     exit_code, stdout, _ = execute_command(["bazel", "--version"])
     eprint(stdout.strip())
-    if exit_code != 0 or not stdout:
-        warning(
-            "Current bazel is not a release version, we recommend using Bazel 7 or newer releases for Bzlmod migration."
-        )
-    elif parse_bazel_version(stdout.strip().split(" ")[1]) < (6, 0, 0):
+    if parse_bazel_version(stdout.strip().split(" ")[1]) < (7, 0, 0):
         error("Current Bazel version is too old, please upgrade to Bazel 7 or newer releases for Bzlmod migration.")
         abort_migration()
 
     # Parse the original workspace name from the WORKSPACE file
     workspace_name = "main"
-    with open("WORKSPACE", "r") as f:
+
+    # Check if WORKSPACE.bazel file exists
+    workspace_file = "WORKSPACE"
+    if pathlib.Path("WORKSPACE.bazel").is_file():
+        workspace_file = "WORKSPACE.bazel"
+
+    with open(workspace_file, "r") as f:
         for line in f:
             s = re.search(r"workspace\(name\s+=\s+[\'\"]([A-Za-z0-9_-]+)[\'\"]", line)
             if s:
@@ -528,12 +536,14 @@ def generate_resolved_file(targets, use_bazel_sync):
     bazel_nobuild_command = [
         "bazel",
         "build",
+        "--enable_workspace",
         "--nobuild",
         "--experimental_repository_resolved_file=resolved_deps.py",
     ] + targets
     bazel_sync_comand = [
         "bazel",
         "sync",
+        "--enable_workspace",
         "--experimental_repository_resolved_file=resolved_deps.py",
     ]
     bazel_command = bazel_sync_comand if use_bazel_sync else bazel_nobuild_command
@@ -634,6 +644,7 @@ def main(argv=None):
             "build",
             "--nobuild",
             "--enable_bzlmod",
+            "--noenable_workspace",
         ] + targets
         exit_code, _, stderr = execute_command(bazel_command)
         if exit_code == 0:
