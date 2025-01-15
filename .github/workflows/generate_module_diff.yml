@@ -15,7 +15,7 @@ jobs:
         with:
           egress-policy: audit
 
-      - name: Run BCR PR Reviewer
-        uses: bazelbuild/continuous-integration/actions/bcr-pr-reviewer@6be1c7c6ae4e93a272f99ecf8b1c335b7c0cbeb5
+      - name: Generate module diff
+        uses: bazelbuild/continuous-integration/actions/bcr-pr-reviewer@diff_module
         with:
           action-type: diff_module
