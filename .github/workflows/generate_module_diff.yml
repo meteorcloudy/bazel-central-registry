@@ -1,0 +1,21 @@
+name: Generate module diff
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'modules/**'
+
+jobs:
+  generate_module_diff:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@0080882f6c36860b6ba35c610c98ce87d4e2f26f # v2.10.2
+        with:
+          egress-policy: audit
+
+      - name: Run BCR PR Reviewer
+        uses: bazelbuild/continuous-integration/actions/bcr-pr-reviewer@6be1c7c6ae4e93a272f99ecf8b1c335b7c0cbeb5
+        with:
+          action-type: diff_module
