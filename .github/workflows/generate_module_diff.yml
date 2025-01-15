@@ -15,6 +15,12 @@ jobs:
         with:
           egress-policy: audit
 
+      - name: Check out PR code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+
       - name: Generate module diff
         uses: bazelbuild/continuous-integration/actions/bcr-pr-reviewer@diff_module
         with:
