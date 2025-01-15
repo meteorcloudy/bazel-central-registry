@@ -1,0 +1,15 @@
+{
+    "homepage": "https://zlib.net",
+    "maintainers": [
+        {
+            "github": "meteorcloudy",
+            "name": "Yun Peng"
+        }
+    ],
+    "repository": [
+        "github:madler/zlib"
+    ],
+    "versions": [
+        "1.0.0"
+    ]
+}
