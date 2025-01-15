@@ -16,6 +16,6 @@ jobs:
           egress-policy: audit
 
       - name: Generate module diff
-        uses: bazelbuild/continuous-integration/actions/bcr-pr-reviewer@diff-module
+        uses: bazelbuild/continuous-integration/actions/bcr-pr-reviewer@diff_module
         with:
           action-type: diff_module
