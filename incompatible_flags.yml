@@ -1,0 +1,3 @@
+incompatible_flags:
+  - --incompatible_disable_native_repo_rules
+  - --incompatible_autoload_externally=
