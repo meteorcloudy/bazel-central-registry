@@ -1,3 +1,13 @@
 incompatible_flags:
-  - --incompatible_disable_native_repo_rules
-  - --incompatible_autoload_externally=
+  "--incompatible_config_setting_private_default_visibility":
+    - 6.x
+    - 7.x
+    - 8.x
+  "--incompatible_disable_native_repo_rules":
+    - 7.x
+    - 8.x
+  "--incompatible_autoload_externally=":
+    - 7.x
+    - 8.x
+  "--incompatible_disable_autoloads_in_main_repo":
+    - last_green
