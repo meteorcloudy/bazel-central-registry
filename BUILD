@@ -1,5 +1,6 @@
 load("@npm//tools:ajv-cli/package_json.bzl", ajv = "bin")
 
+
 _METADATA_FILES = glob(["modules/*/metadata.json"])
 
 [
